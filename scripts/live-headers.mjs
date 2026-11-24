@@ -48,14 +48,9 @@ const page = await get('/');
 const bundle = (await page.clone().text()).match(
   /(?:src|href)="(\/_astro\/[^"]+\.(?:js|css))"/,
 )?.[1];
-// A page's Markdown copy, for the `/*.md` rule: the first one llms.txt links.
-const markdown = (await (await get('/llms.txt')).text()).match(
-  /https?:\/\/[^/\s)]+(\/[^\s)]*\/index\.md)/,
-)?.[1];
 
 for (const { path, values } of headerRules(readFileSync('netlify.toml', 'utf8'))) {
-  const target =
-    path === '/*' ? '/' : path === '/_astro/*' ? bundle : path === '/*.md' ? markdown : path;
+  const target = path === '/*' ? '/' : path === '/_astro/*' ? bundle : path;
   if (!target || target.includes('*')) {
     problems.push(`netlify.toml  for = "${path}": no page to fetch for it`);
     continue;

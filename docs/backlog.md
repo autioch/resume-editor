@@ -39,9 +39,8 @@ In order:
 
 Steps only the owner can take — an account, DNS, a setting in a host's UI.
 
-- **Netlify project** `qb-resume`: link it to `autioch/resume-editor` (Import from Git or Site
-  configuration → Build & deploy → Link repository; build settings come from `netlify.toml`), then
-  the domain `cv.jakub.page` as primary (Netlify DNS zone `jakub.page`) — or another domain:
+- **Netlify project** `qb-resume` (linked to the repo; deploy previews build): the domain
+  `cv.jakub.page` as primary (Netlify DNS zone `jakub.page`) — or another domain:
   `scripts/dist.mjs` `ORIGIN` and `netlify.toml` change with it. Turn off form detection and the
   badge; leave the Drawer on deploy previews.
 - **Repo settings** as on `tinctures`: Dependabot security updates on; the npm auto-triage preset
