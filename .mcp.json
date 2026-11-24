@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@4.4.4"]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@1.12.0",
+        "--executablePath",
+        "${CHROME_DEVTOOLS_EXECUTABLE_PATH:-/opt/pw-browsers/chromium}"
+      ]
+    },
+    "netlify": {
+      "command": "npx",
+      "args": ["-y", "@netlify/mcp@1.21.0"],
+      "env": {
+        "NETLIFY_PERSONAL_ACCESS_TOKEN": "${NETLIFY_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  }
+}

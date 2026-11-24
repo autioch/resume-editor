@@ -1,0 +1,42 @@
+---
+import '../styles.css';
+import { AUTHOR, SITE_NAME } from '../consts';
+
+interface Props {
+  /** The page's own title; the site name follows it (the home page is the site name alone). */
+  title?: string;
+  description: string;
+  /** Not found: no canonical, kept out of the index. */
+  noindex?: boolean;
+}
+
+const { title, description, noindex = false } = Astro.props;
+const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pl_PL" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    {!noindex && <meta property="og:url" content={canonical} />}
+  </head>
+  <body>
+    <div class="page">
+      <slot />
+      <footer class="site-footer">
+        <a href={AUTHOR.url}>{AUTHOR.name}</a>
+      </footer>
+    </div>
+  </body>
+</html>

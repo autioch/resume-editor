@@ -1,0 +1,78 @@
+/* Every colour and size the site uses (styling.md § Palette). A starting set: the template's look
+   is agreed on a rendered sample (backlog.md). */
+:root {
+  color-scheme: light;
+
+  /* The desk round the sheet. */
+  --bg: #f3f3f1;
+  --surface: #ffffff;
+  /* Body text: 15.7:1 on --bg. */
+  --ink: #1a1a1a;
+  /* Secondary text: 8.4:1 on --bg. */
+  --muted: #474744;
+  --line: #d4d4cf;
+  /* Links and focus: 7.5:1 on --bg. */
+  --accent: #1f4e8c;
+
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fs-body: 1rem;
+  --fs-lede: clamp(1.125rem, 1rem + 0.5vi, 1.25rem);
+  --fs-h1: clamp(2rem, 1.6rem + 2vi, 2.75rem);
+  --space-4: 1rem;
+  --space-6: 2rem;
+  --measure: 40rem;
+  --gutter: clamp(1rem, 4vi, 2rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  /* eslint-disable-next-line css/no-important -- `hidden` must beat every component's display, whatever its specificity. */
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.15em;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+h1 {
+  margin-block: 0 var(--space-4);
+  font-size: var(--fs-h1);
+  line-height: 1.15;
+}
+
+.page {
+  max-inline-size: var(--measure);
+  margin-inline: auto;
+  padding: var(--space-6) var(--gutter);
+}
+
+.lede {
+  color: var(--muted);
+  font-size: var(--fs-lede);
+}
+
+.site-footer {
+  margin-block-start: var(--space-6);
+  padding-block-start: var(--space-4);
+  border-block-start: 1px solid var(--line);
+}

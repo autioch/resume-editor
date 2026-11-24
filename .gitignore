@@ -1,0 +1,21 @@
+# Netlify CLI local state
+.netlify/
+
+# logs
+*.log
+
+# environment variables
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+.idea/
+
+# Claude Code local (personal) settings
+.claude/settings.local.json
+node_modules
+
+# Astro
+dist/
+.astro/

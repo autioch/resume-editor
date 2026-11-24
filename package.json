@@ -1,0 +1,50 @@
+{
+  "name": "resume-editor",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "node --test \"src/**/*.test.ts\"",
+    "lint": "eslint .",
+    "format": "prettier --check .",
+    "knip": "knip",
+    "check:types": "astro check",
+    "check:html": "html-validate dist",
+    "check:css": "node scripts/check-css.mjs",
+    "check:csp": "node scripts/check-csp.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "check:repo": "node scripts/check-repo.mjs",
+    "check:weight": "node scripts/check-weight.mjs",
+    "ci": "npm run format && npm run lint && npm run knip && npm run check:repo && npm run check:types && npm run test && npm run build && npm run check:html && npm run check:css && npm run check:csp && npm run check:links && npm run check:weight",
+    "fix": "eslint . --fix && prettier --write .",
+    "live:headers": "node scripts/live-headers.mjs",
+    "live:links": "node scripts/live-links.mjs",
+    "a11y": "node scripts/a11y.mjs"
+  },
+  "dependencies": {
+    "astro": "7.4.7"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@eslint/css": "2.0.1",
+    "@eslint/js": "10.0.1",
+    "@eslint/json": "2.1.1",
+    "@eslint/markdown": "8.0.3",
+    "@types/node": "24.19.2",
+    "axe-core": "4.14.0",
+    "eslint": "10.14.0",
+    "eslint-plugin-astro": "3.2.1",
+    "html-validate": "11.18.0",
+    "knip": "6.44.1",
+    "prettier": "3.9.10",
+    "prettier-plugin-astro": "1.1.2",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1"
+  },
+  "overrides": {
+    "katex": "0.19.1"
+  }
+}
