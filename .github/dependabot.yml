@@ -1,0 +1,22 @@
+# Security fixes for production dependencies only (owner): dependencies are bumped on purpose
+# (development.md § Conventions), not by a bot. Per GitHub's options reference: open-pull-requests-limit: 0 turns
+# version updates off and doesn't touch security updates (a repository setting, their own limit);
+# `allow` applies to both, so a security PR comes only for package.json's "dependencies".
+# Development tools and GitHub Actions get no PRs: they never reach the site, and CI keeps working
+# on the pinned versions. A security PR isn't merged by the CI
+# merge job (a Dependabot-triggered run gets a read-only token): merge it by hand once green.
+# An advisory on a development-only package still starts a security run, which `allow` filters
+# out: the run fails with `all_versions_ignored` and opens no PR — expected, not a broken config.
+# The repository's auto-triage preset for development-scoped npm alerts keeps most of those quiet.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
+    allow:
+      - dependency-type: production
+    commit-message:
+      prefix: build
+      include: scope

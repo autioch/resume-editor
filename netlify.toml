@@ -1,0 +1,32 @@
+# cv.jakub.page (proposed) — Astro, static output. Only dist/ is published; the agent docs stay private.
+[build]
+  command = "npm run build"
+  publish = "dist"
+  # Skip the deploy when nothing that builds the site changed (docs-only commits). Exit 0 = skip.
+  # scripts/dist.mjs: the build imports ORIGIN from it (astro.config.mjs).
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- src/ public/ scripts/dist.mjs astro.config.mjs package.json package-lock.json .nvmrc netlify.toml"
+
+# One canonical host: the Netlify subdomain redirects to it. Deploy previews
+# (deploy-preview-N--qb-resume.netlify.app) are other hosts and stay reachable.
+[[redirects]]
+  from = "https://qb-resume.netlify.app/*"
+  to = "https://cv.jakub.page/:splat"
+  status = 301
+  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; require-trusted-types-for 'script'; trusted-types 'none'"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Astro's bundles carry a content hash in the name, so they never change: a repeat visit loads them
+# from the browser cache with no request.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+    # ready_for_review: a draft that's marked ready gets checked — and merged — then.
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Read-only by default; the merge job asks for write below.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Gate
+    runs-on: ubuntu-latest
+    steps:
+      # Actions pinned to a commit (a tag can be moved); Dependabot bumps the SHA and the comment.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Nothing here pushes: don't leave the token in .git/config for later steps.
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Format, lint, type-check, build, validate
+        run: npm run ci
+
+      # Advisories in what the build runs on (Astro and its tree). Here, not in the local gate: it
+      # needs the registry. Dev-only tooling is audited weekly (weekly.yml).
+      # Critical only (owner): a high advisory with no patched release (picomatch, every version)
+      # would block every PR; the weekly run still reports high ones.
+      - name: npm audit (production, critical)
+        run: npm audit --omit=dev --audit-level=critical
+
+      # axe-core over the build the gate just made, in the runner's Chrome. Not in the local gate:
+      # it needs a browser and takes a minute.
+      - name: Accessibility
+        run: npm run a11y
+
+  # GitHub's own auto-merge needs Pro for a private repo, so CI merges instead: once the Gate is
+  # green, squash-merge the PR and delete its branch (GitHub's own auto-delete doesn't fire for a
+  # merge made with the Actions token). Only the owner's PRs from this repo;
+  # a draft PR is never merged — open as draft to hold a change.
+  merge:
+    name: Merge on green
+    needs: ci
+    if: >-
+      github.event_name == 'pull_request' &&
+      !github.event.pull_request.draft &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'autioch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Squash-merge
+        run: gh pr merge "$PR" --squash --delete-branch --repo "$REPO" --match-head-commit "$SHA"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          # Merge exactly what the Gate checked; a newer push runs (and merges) on its own.
+          SHA: ${{ github.event.pull_request.head.sha }}

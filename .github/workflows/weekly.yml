@@ -1,0 +1,45 @@
+name: Weekly
+
+# What breaks with time, not with a change: external links rot, headers drift on the host,
+# advisories land on the production dependency. A failure turns the run red, and GitHub mails the
+# owner.
+on:
+  schedule:
+    # Tuesday 05:00 UTC.
+    - cron: '0 5 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Weekly checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Nothing here pushes: don't leave the token in .git/config for later steps.
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: External links
+        run: npm run live:links
+
+      # The live site's headers against netlify.toml. Runs even when the links fail.
+      - name: Production headers
+        if: ${{ !cancelled() }}
+        run: npm run live:headers
+
+      # Production dependencies only, high and up: development tools never reach the site.
+      - name: npm audit (production, high and up)
+        if: ${{ !cancelled() }}
+        run: npm audit --omit=dev --audit-level=high
